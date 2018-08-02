@@ -26,6 +26,11 @@ class CreditCard extends PayNowSoap
     public function __construct()
     {
         parent::__construct();
+
+        if (is_null(config('paynow'))) {
+            throw new PayNowException("You need to publish config file command: php artisan vendor:publish --provider=Maras0830\PayNowSDK\Providers\PayNowServiceProvider");
+        }
+
     }
 
     /**
@@ -178,6 +183,49 @@ class CreditCard extends PayNowSoap
         return $this->response;
     }
 
+    public function installment($times)
+    {
+
+        if (is_null($this->order))
+            throw new PayNowException('You need to setOrder');
+
+        if (is_null($this->customer))
+            throw new PayNowException('You need to setCustomer');
+
+        if (is_null($this->creditCard))
+            throw new PayNowException('You need to setCreditCard');
+
+        if (is_null($this->customer->getCIFID()))
+            throw new PayNowException('You need to set CIF ID');
+
+        if (is_null($this->customer->getCIFPW()))
+            throw new PayNowException('You need to set CIF Password');
+
+        $content = [
+            'WebNo' => config('paynow.web_no'),
+            'mem_password' => config('paynow.password'),
+            'CardNo' => $this->creditCard->secret_card_number,
+            'TotalPrice' => $this->order->total,
+
+            'OrderInfo' => $this->order->info,
+            'OrderNo' => $this->order->number,
+
+            'ReceiverID' => $this->customer->id,
+            'ReceiverTel' => $this->customer->tel,
+            'ReceiverName' => $this->customer->name,
+            'ReceiverEmail' => $this->customer->email,
+
+            'ECPlatform' => config('paynow.ec_name', 'Owlting'),
+            'installment' => $times
+        ];
+
+        $this->response = $this->getSoapClient()->__soapCall('Add_CardAuthorise_Installment ', [
+            $content
+        ]);
+
+        return $this->response;
+    }
+
     /**
      * @param $CIF_SN
      * @param $CIF_id
@@ -186,7 +234,7 @@ class CreditCard extends PayNowSoap
      * @return mixed
      * @throws PayNowException
      */
-    public function getCreditCard($CIF_SN, $CIF_id, $CIF_password, $credit_card_secret_code)
+    public function checkoutByCIFAndSecretCode($CIF_SN, $CIF_id, $CIF_password, $credit_card_secret_code)
     {
         if (is_null($this->order))
             throw new PayNowException('You need to setOrder');
