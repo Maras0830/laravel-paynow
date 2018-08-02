@@ -18,9 +18,15 @@ class PayNowSoap
      */
     public function __construct()
     {
-        $this->client = new SoapClient("https://test.paynow.com.tw/Ws_CardAuthorise.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
+        if (config('paynow.debug_mode') === true)
+            $this->client = new SoapClient("https://test.paynow.com.tw/Ws_CardAuthorise.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
+        else
+            $this->client = new SoapClient("https://www.paynow.com.tw/Ws_CardAuthorise.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
     }
 
+    /**
+     * @return SoapClient
+     */
     public function getSoapClient()
     {
         return $this->client;

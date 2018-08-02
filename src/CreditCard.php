@@ -8,7 +8,7 @@
 
 namespace Maras0830\PayNowSDK;
 
-
+use Maras0830\PayNowSDK\Exceptions\PayNowException;
 use Maras0830\PayNowSDK\Modules\CreditCardInfo;
 use Maras0830\PayNowSDK\Modules\Customer;
 use Maras0830\PayNowSDK\Modules\Order;
@@ -28,11 +28,20 @@ class CreditCard extends PayNowSoap
         parent::__construct();
     }
 
+    /**
+     * @return mixed
+     */
     public function getLastResponse()
     {
         return $this->response;
     }
 
+    /**
+     * @param $info
+     * @param $number
+     * @param $total
+     * @return $this
+     */
     public function setOrder($info, $number, $total)
     {
         $this->order = new Order($info, $number, $total);
@@ -40,6 +49,13 @@ class CreditCard extends PayNowSoap
         return $this;
     }
 
+    /**
+     * @param $name
+     * @param $tel
+     * @param $email
+     * @param $ip
+     * @return $this
+     */
     public function setCustomer($name, $tel, $email, $ip)
     {
         $this->customer = new Customer($name, $tel, $email, $ip);
@@ -47,10 +63,16 @@ class CreditCard extends PayNowSoap
         return $this;
     }
 
+    /**
+     * @param $CIFID
+     * @param $CIFPW
+     * @return $this
+     * @throws PayNowException
+     */
     public function setCustomerCIF($CIFID, $CIFPW)
     {
         if (is_null($this->customer))
-            throw new \Exception('You need to setCustomer first.');
+            throw new PayNowException('You need to setCustomer first.');
 
         $this->customer->setCIFID($CIFID);
 
@@ -59,6 +81,13 @@ class CreditCard extends PayNowSoap
         return $this;
     }
 
+    /**
+     * @param $card_number
+     * @param $valid_year
+     * @param $valid_month
+     * @param $safe_code
+     * @return $this
+     */
     public function setCreditCard($card_number, $valid_year, $valid_month, $safe_code)
     {
         $this->creditCard = new CreditCardInfo($card_number, $valid_year, $valid_month, $safe_code);
@@ -66,16 +95,20 @@ class CreditCard extends PayNowSoap
         return $this;
     }
 
+    /**
+     * @return mixed
+     * @throws PayNowException
+     */
     public function checkout()
     {
         if (is_null($this->order))
-            throw new \Exception('You need to setOrder');
+            throw new PayNowException('You need to setOrder');
 
         if (is_null($this->customer))
-            throw new \Exception('You need to setCustomer');
+            throw new PayNowException('You need to setCustomer');
 
         if (is_null($this->creditCard))
-            throw new \Exception('You need to setCreditCard');
+            throw new PayNowException('You need to setCreditCard');
 
         $content = [
             'userIP' => $this->customer->ip,
@@ -97,22 +130,27 @@ class CreditCard extends PayNowSoap
         return $this->response;
     }
 
+    /**
+     * @param int $times
+     * @return mixed
+     * @throws PayNowException
+     */
     public function autoPay($times = 1)
     {
         if (is_null($this->order))
-            throw new \Exception('You need to setOrder');
+            throw new PayNowException('You need to setOrder');
 
         if (is_null($this->customer))
-            throw new \Exception('You need to setCustomer');
+            throw new PayNowException('You need to setCustomer');
 
         if (is_null($this->creditCard))
-            throw new \Exception('You need to setCreditCard');
+            throw new PayNowException('You need to setCreditCard');
 
         if (is_null($this->customer->getCIFID()))
-            throw new \Exception('You need to set CIF ID');
+            throw new PayNowException('You need to set CIF ID');
 
         if (is_null($this->customer->getCIFPW()))
-            throw new \Exception('You need to set CIF Password');
+            throw new PayNowException('You need to set CIF Password');
 
         $content = [
             'userIP' => $this->customer->ip,
@@ -140,16 +178,18 @@ class CreditCard extends PayNowSoap
         return $this->response;
     }
 
+    /**
+     * @param $CIF_SN
+     * @param $CIF_id
+     * @param $CIF_password
+     * @param $credit_card_secret_code
+     * @return mixed
+     * @throws PayNowException
+     */
     public function getCreditCard($CIF_SN, $CIF_id, $CIF_password, $credit_card_secret_code)
     {
         if (is_null($this->order))
-            throw new \Exception('You need to setOrder');
-
-//        if (is_null($this->customer->getCIFID()))
-//            throw new \Exception('You need to set CIF ID');
-//
-//        if (is_null($this->customer->getCIFPW()))
-//            throw new \Exception('You need to set CIF Password');
+            throw new PayNowException('You need to setOrder');
 
         $content = [
             'WebNo' => config('paynow.web_no'),
