@@ -1,0 +1,20 @@
+{
+    "name": "maras0830/laravel-paynow",
+    "description": "Laravel 5 for paynow.",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Maras0830",
+            "email": "Maras0830@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Maras0830\\PayNowSDK\\": "src"
+        }
+    },
+    "require": {
+        "guzzlehttp/guzzle": "^6.2"
+    }
+}
