@@ -228,13 +228,13 @@ class CreditCard extends PayNowSoap
 
     /**
      * @param $CIF_SN
-     * @param $CIF_id
-     * @param $CIF_password
+     * @param $CIF_ID
+     * @param $CIF_PASSWORD
      * @param $credit_card_secret_code
      * @return mixed
      * @throws PayNowException
      */
-    public function checkoutByCIFAndSecretCode($CIF_SN, $CIF_id, $CIF_password, $credit_card_secret_code)
+    public function checkoutByCIFAndSecretCode($CIF_SN, $CIF_ID, $CIF_PASSWORD, $credit_card_secret_code)
     {
         if (is_null($this->order))
             throw new PayNowException('You need to setOrder');
