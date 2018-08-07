@@ -61,9 +61,9 @@ class CreditCard extends PayNowSoap
      * @param $ip
      * @return $this
      */
-    public function setCustomer($name, $tel, $email, $ip)
+    public function setCustomer($id, $name, $tel, $email, $ip)
     {
-        $this->customer = new Customer($name, $tel, $email, $ip);
+        $this->customer = new Customer($id, $name, $tel, $email, $ip);
 
         return $this;
     }
@@ -216,10 +216,11 @@ class CreditCard extends PayNowSoap
             'ReceiverEmail' => $this->customer->email,
 
             'ECPlatform' => config('paynow.ec_name', 'Owlting'),
-            'installment' => $times
+            'installment' => $times,
+            'CIFID_SN' => 1
         ];
 
-        $this->response = $this->getSoapClient()->__soapCall('Add_CardAuthorise_Installment ', [
+        $this->response = $this->getSoapClient()->__soapCall('Add_CardAuthorise_Installment', [
             $content
         ]);
 
@@ -246,8 +247,8 @@ class CreditCard extends PayNowSoap
             'OrderInfo' => $this->order->info,
             'OrderNo' => $this->order->number,
 
-            'CIFID' => $CIF_id,
-            'CIFPW' => $CIF_password,
+            'CIFID' => $CIF_ID,
+            'CIFPW' => $CIF_PASSWORD,
 
             'CardlastNo' => $credit_card_secret_code,
             'ECPlatform' => config('paynow.ec_name', 'Owlting'),
@@ -255,6 +256,24 @@ class CreditCard extends PayNowSoap
         ];
 
         $this->response = $this->getSoapClient()->__soapCall('Add_CardAuthorise_DLoadUserCID', [
+            $content
+        ]);
+
+        return $this->response;
+    }
+
+    /**
+     * 自動授權
+     */
+    public function AutoAuthorise($pay_day, $mem_cid)
+    {
+        $content = [
+            'pay_day' => 10,
+            'mem_password' => config('paynow.password'),
+            'mem_cid' => 1,
+        ];
+
+        $this->response = $this->getSoapClient()->__soapCall('AutoAuthorise', [
             $content
         ]);
 

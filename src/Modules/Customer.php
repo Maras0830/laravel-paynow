@@ -11,6 +11,8 @@ namespace Maras0830\PayNowSDK\Modules;
 
 class Customer
 {
+    public $id;
+
     public $name;
 
     public $tel;
@@ -31,8 +33,9 @@ class Customer
      * @param $ip
      * @param array $CIF
      */
-    public function __construct($name, $tel, $email, $ip)
+    public function __construct($id, $name, $tel, $email, $ip)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->email = $email;
         $this->tel = $tel;
