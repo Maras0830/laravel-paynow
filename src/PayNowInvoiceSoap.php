@@ -3,8 +3,9 @@ namespace Maras0830\PayNowSDK;
 
 use SoapClient;
 
-class PayNowPaymentSoap
+class PayNowInvoiceSoap
 {
+
     private $client;
 
     /**
@@ -13,9 +14,9 @@ class PayNowPaymentSoap
     public function __construct()
     {
         if (config('paynow.debug_mode') === true)
-            $this->client = new SoapClient("http://test.paynow.com.tw/PaymentCheck.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
+            $this->client = new SoapClient("https://testinvoice.paynow.com.tw/PayNowEInvoice.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
         else
-            $this->client = new SoapClient("http://www.paynow.com.tw/PaymentCheck.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
+            $this->client = new SoapClient("https://invoice.paynow.com.tw/PayNowEInvoice.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
     }
 
     /**
