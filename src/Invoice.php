@@ -9,6 +9,7 @@ class Invoice extends PayNowInvoiceSoap
     protected $order;
     protected $store;
     protected $invoice;
+    protected $invoices;
 
     /**
      * CreditCard constructor.
@@ -30,6 +31,33 @@ class Invoice extends PayNowInvoiceSoap
     public function getLastResponse()
     {
         return $this->response;
+    }
+
+    public function parseResponse()
+    {
+        $result = [];
+
+        if ($this->response != null) {
+
+            foreach ($this->response as $response)
+            {
+                $response_ary = explode(',', $response);
+
+                if (count($response_ary) > 1) {
+
+                    for ($i = 1; $i < count($response_ary); $i++) {
+                        $parse = explode('_', $response_ary[$i]);
+
+                        $result[] = [
+                            'order_id' => $parse[0],
+                            'invoice_number' => $parse[1],
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -71,7 +99,7 @@ class Invoice extends PayNowInvoiceSoap
         int $item_tax_type,
         bool $is_pass_customs)
     {
-        $this->invoice = new InvoiceDetail(
+        $this->invoices[] = new InvoiceDetail(
             $order_no,
             $buyer_id,
             $buyer_name,
@@ -96,17 +124,27 @@ class Invoice extends PayNowInvoiceSoap
 
     public function submit()
     {
-        $content = [
-            'mem_cid' => $this->store->getMemCid(),
-            'mem_password' => $this->store->getMemPassword(),
-            'csvStr' => urlencode(base64_encode($this->invoice->toString()))
-        ];
+        $invoice_string = '';
 
-//        dd($content);
+        foreach ($this->invoices as $invoice) {
+            if (strlen($invoice_string) != 0)
+                $invoice_string .= "\n";
 
-        $this->response = $this->getSoapClient()->__soapCall('UploadInvoice_Patch', [
-            $content
-        ]);
+            $invoice_string .= $invoice->toString();
+        }
+
+        if (strlen($invoice_string) != 0) {
+
+            $content = [
+                'mem_cid' => $this->store->getMemCid(),
+                'mem_password' => $this->store->getMemPassword(),
+                'csvStr' => urlencode(base64_encode($invoice_string))
+            ];
+
+            $this->response = $this->getSoapClient()->__soapCall('UploadInvoice_Patch', [
+                $content
+            ]);
+        }
     }
 
 }
