@@ -147,4 +147,9 @@ class Invoice extends PayNowInvoiceSoap
         }
     }
 
+    public function getInvoices()
+    {
+        return $this->invoices;
+    }
+
 }
