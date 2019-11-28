@@ -6,7 +6,7 @@ use Maras0830\PayNowSDK\Traits\Encrypt;
 use SoapClient;
 use Carbon\Carbon;
 use Maras0830\PayNowSDK\Exceptions\DecryptException;
-use Maras0830\PayNowSDK\Exceptions\PaynowException;
+use Maras0830\PayNowSDK\Exceptions\PayNowException;
 use Maras0830\PayNowSDK\Exceptions\ValidateException;
 
 class PayNowEncrypt extends PayNowSOAP
@@ -46,7 +46,7 @@ class PayNowEncrypt extends PayNowSOAP
     /**
      * @return $this
      * @throws Exceptions\EncryptException
-     * @throws PaynowException
+     * @throws PayNowException
      */
     public function getTransactionCheckNum()
     {
@@ -72,7 +72,7 @@ class PayNowEncrypt extends PayNowSOAP
                 $content
             ]);
         } catch (\Exception $e) {
-            throw new PaynowException($this->getSoapClient()->__getLastResponse());
+            throw new PayNowException($this->getSoapClient()->__getLastResponse());
         }
 
         return $this;
@@ -82,7 +82,7 @@ class PayNowEncrypt extends PayNowSOAP
      * @param bool $is_get_key
      * @return mixed
      * @throws DecryptException
-     * @throws PaynowException
+     * @throws PayNowException
      * @throws ValidateException
      */
     public function decodeAndValidate($is_get_key = false)
@@ -90,7 +90,7 @@ class PayNowEncrypt extends PayNowSOAP
         $response = $this->getLastResponse()->GetEncryptionStrResult;
 
         if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
-            throw new PaynowException('paynow service fail.');
+            throw new PayNowException('paynow service fail.');
         }
 
         $time_str = $this->generateTimeStr($this->time);
@@ -118,7 +118,7 @@ class PayNowEncrypt extends PayNowSOAP
      * @param $res
      * @return $this
      * @throws Exceptions\EncryptException
-     * @throws PaynowException
+     * @throws PayNowException
      */
     public function getTransactionKey($res)
     {
@@ -134,7 +134,7 @@ class PayNowEncrypt extends PayNowSOAP
                 $content
             ]);
         } catch (\Exception $e) {
-            throw new PaynowException($this->getSoapClient()->__getLastResponse());
+            throw new PayNowException($this->getSoapClient()->__getLastResponse());
         }
 
         return $this;
@@ -144,7 +144,7 @@ class PayNowEncrypt extends PayNowSOAP
      * @param $time_str
      * @param $type
      * @return string
-     * @throws PaynowException
+     * @throws PayNowException
      */
     private function generateCheckCode($time_str, $type)
     {
@@ -160,7 +160,7 @@ class PayNowEncrypt extends PayNowSOAP
                 $key = $no . $time_str . substr($time_str, 0, 4) . substr($hash, 0, 4);
                 break;
             default:
-                throw new PaynowException('generate CheckCode fail, type is null');
+                throw new PayNowException('generate CheckCode fail, type is null');
         }
 
         $op = 0;

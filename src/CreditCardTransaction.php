@@ -5,7 +5,7 @@ namespace Maras0830\PayNowSDK;
 use Carbon\Carbon;
 use Maras0830\PayNowSDK\Exceptions\CheckoutException;
 use Maras0830\PayNowSDK\Exceptions\DecryptException;
-use Maras0830\PayNowSDK\Exceptions\PaynowException;
+use Maras0830\PayNowSDK\Exceptions\PayNowException;
 use Maras0830\PayNowSDK\Exceptions\TransactionException;
 use Maras0830\PayNowSDK\Exceptions\ValidateException;
 use Maras0830\PayNowSDK\Modules\CreditCardInfo;
@@ -53,7 +53,7 @@ class CreditCardTransaction extends PayNowSOAP
      * @return $this
      * @throws Exceptions\DecryptException
      * @throws Exceptions\ValidateException
-     * @throws PaynowException
+     * @throws PayNowException
      */
     public function setEncrypt()
     {
@@ -95,12 +95,12 @@ class CreditCardTransaction extends PayNowSOAP
      * @param $valid_month
      * @param $safe_code
      * @return $this
-     * @throws PaynowException
+     * @throws PayNowException
      */
     public function setCreditCard($card_number, $valid_year, $valid_month, $safe_code)
     {
         if ($this->encrypt_key === null || $this->encrypt_iv === null || $this->encrypt === null) {
-            throw new PaynowException('You need to setEncrypt');
+            throw new PayNowException('You need to setEncrypt');
         }
 
         $this->creditCard = new CreditCardInfo($this->encrypt_key, $this->encrypt_iv, $card_number, $valid_year, $valid_month, $safe_code);
@@ -125,24 +125,24 @@ class CreditCardTransaction extends PayNowSOAP
 
     /**
      *
-     * @throws PaynowException
+     * @throws PayNowException
      */
     public function checkout()
     {
         if ($this->encrypt === null) {
-            throw new PaynowException('You need to setEncrypt');
+            throw new PayNowException('You need to setEncrypt');
         }
 
         if ($this->order === null) {
-            throw new PaynowException('You need to setOrder');
+            throw new PayNowException('You need to setOrder');
         }
 
         if ($this->customer === null) {
-            throw new PaynowException('You need to setCustomer');
+            throw new PayNowException('You need to setCustomer');
         }
 
         if ($this->creditCard === null) {
-            throw new PaynowException('You need to setCreditCard');
+            throw new PayNowException('You need to setCreditCard');
         }
 
         $data = [
@@ -186,7 +186,7 @@ class CreditCardTransaction extends PayNowSOAP
     /**
      * @return mixed
      * @throws DecryptException
-     * @throws PaynowException
+     * @throws PayNowException
      * @throws ValidateException
      */
     public function decodeAndValidate()
@@ -194,7 +194,7 @@ class CreditCardTransaction extends PayNowSOAP
         $response = $this->getLastResponse()->CardAuthorise_PResult;
 
         if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
-            throw new PaynowException('paynow service fail.');
+            throw new PayNowException('paynow service fail.');
         }
 
         $decrypted = $this->decrypt($response);
