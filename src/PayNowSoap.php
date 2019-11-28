@@ -1,28 +1,21 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Maras
- * Date: 2018/8/2
- * Time: 下午1:11
- */
+
 namespace Maras0830\PayNowSDK;
 
 use SoapClient;
+use Carbon\Carbon;
 
-class PayNowSoap
+abstract class PayNowSOAP
 {
-    private $client;
+    /** @var SoapClient */
+    protected $client;
+
+    protected $response;
 
     /**
-     * PayNowSoap constructor.
+     * @var Carbon
      */
-    public function __construct()
-    {
-        if (config('paynow.debug_mode') === true)
-            $this->client = new SoapClient("https://test.paynow.com.tw/Ws_CardAuthorise.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
-        else
-            $this->client = new SoapClient("https://www.paynow.com.tw/Ws_CardAuthorise.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
-    }
+    protected $time;
 
     /**
      * @return SoapClient
@@ -30,5 +23,19 @@ class PayNowSoap
     public function getSoapClient()
     {
         return $this->client;
+    }
+
+    public function getLastResponse()
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Carbon $time
+     * @return string
+     */
+    public function generateTimeStr(Carbon $time)
+    {
+        return substr($time->format('y'), -1) . $time->diffInDays($time->copy()->startOfYear()->subDay()) . $time->format('His');
     }
 }
