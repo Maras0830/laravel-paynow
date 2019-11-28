@@ -42,7 +42,7 @@ PAYNOW_EC_NAME=
 
 ```php
 $now = Carbon\Carbon::now('Asia/Taipei');
-$transaction = new Owlting\PayNow\Transaction($now);
+$transaction = new Maras0830\PayNowSDK\CreditCardTransaction($now);
 
 $card_number = '4023730207292803';
 $valid_year = '20';
