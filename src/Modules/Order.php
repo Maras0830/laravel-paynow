@@ -1,12 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Maras
- * Date: 2018/8/1
- * Time: 下午4:29
- */
 
 namespace Maras0830\PayNowSDK\Modules;
+
+use Maras0830\PayNowSDK\Exceptions\OrderException;
 
 class Order
 {
@@ -16,29 +12,21 @@ class Order
 
     public $total;
 
-    public $deduct_count  = 1;
-
     /**
-     * PayNowOrder constructor.
-     * @param $info "transaction content"
-     * @param $number "order number"
-     * @param $total "order total"
+     * Order constructor.
+     * @param $info
+     * @param $number
+     * @param $total
+     * @throws OrderException
      */
     public function __construct($info, $number, $total)
     {
+        if (mb_strlen($info) < 3) {
+            throw new OrderException("OrderInfo len must over 3");
+        }
+
         $this->info = $info;
         $this->number = $number;
         $this->total = $total;
-    }
-
-    /**
-     * @param int $deduct_count
-     * @return $this
-     */
-    public function setDeductCount(int $deduct_count)
-    {
-        $this->deduct_count = $deduct_count;
-
-        return $this;
     }
 }

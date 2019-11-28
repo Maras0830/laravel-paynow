@@ -38,52 +38,23 @@ PAYNOW_EC_NAME=
 有效年月： 12/12
 安全碼：999
 
-1. save card (儲存卡片，並且刷卡)
+1. CreditCard backend transaction
+
 ```php
-    $creditcard = new Maras0830\PayNowSDK\CreditCard();
+$now = Carbon\Carbon::now('Asia/Taipei');
+$transaction = new Maras0830\PayNowSDK\CreditCardTransaction($now);
 
-    $creditcard
-        ->setOrder('訂購', 'ORD201800000001', 30)
-        ->setCustomer(1, 'Maras', '0912345678', 'maraschen@codingweb.tw', '127.0.0.1')
-        ->setCustomerCIF('1234', '1234')
-        ->setCreditCard('4025950011112222', '12', '12', '999')
-        ->autoPay(1);
-
-    $response = $creditcard->getLastResponse();
-```
-
-2. auto_checkout (根據 CIF 資訊結帳)
-```php
-    $creditcard = new Maras0830\PayNowSDK\CreditCard();
-
-    $creditcard
-        ->setOrder('訂購', 'ORD201800000001', 30)
-        ->checkoutByCIFAndSecretCode( '1', '1234','1234','999');
-	
-    $response = $creditcard->getLastResponse();
-```
-
-3. installment($times=1)
-```php
-
-    $creditcard = new Maras0830\PayNowSDK\CreditCard();
-
-    $creditcard
-        ->setOrder('訂購', 'ORD201800000001', 30)
-        ->setCustomer(1, 'Maras Chen', '0912345678', 'maraschen@codingweb.tw', '127.0.0.1')
-        ->setCustomerCIF('5566', '5566')
-        ->setCreditCard('4025950011112222', '12', '12', '999')
-        ->installment(3);
-
-    $response = $creditcard->getLastResponse();
-```
-
-
-2. refund
-```php
-    $payment = new Maras0830\PayNowSDK\Payment();
-
-    $payment->refund('800123123123123', '退款');
-
-    $response = $creditcard->getLastResponse();
+$card_number = '4023730207292803';
+$valid_year = '20';
+$valid_month = '05';
+$safe_code = '685';
+    
+// $res is transaction response.
+$res = $transaction
+    ->setEncrypt()
+    ->setOrder('測試交易', 'OWLTEST1000111002', 100) // orderinfo strlen > 3
+    ->setCreditCard($card_number, $valid_year, $valid_month, $safe_code)
+    ->setCustomer(1, 'Eric', '09121212121212', 'test@test.com', '127.0.0.1')
+    ->checkout()
+    ->decodeAndValidate();
 ```
