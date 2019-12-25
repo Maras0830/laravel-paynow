@@ -57,7 +57,7 @@ class CreditCardTransaction extends PayNowSOAP
      */
     public function setEncrypt()
     {
-        $this->encrypt = new PaynowEncrypt($this->time);
+        $this->encrypt = new PayNowEncrypt($this->time);
 
         $check_num_res = $this->encrypt
             ->getTransactionCheckNum()
@@ -201,7 +201,7 @@ class CreditCardTransaction extends PayNowSOAP
 
         $decode = json_decode($decrypted, true);
 
-        $pass_code = strtoupper(sha1(config('paynow.web_no') . config('paynow.password') . $decode['BuySafeNo'] . $decode['TotalPrice'] . $decode['RespCode'] ));
+        $pass_code = strtoupper(sha1(config('paynow.web_no') . config('paynow.password') . $decode['BuySafeNo'] . $decode['TotalPrice'] . $decode['RespCode']));
 
         if ($decode['PassCode'] !== $pass_code) {
             throw new ValidateException('PassCode check fail.');
