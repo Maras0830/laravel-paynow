@@ -169,7 +169,9 @@ class PayNowEncrypt extends PayNowSOAP
             $op += ($key[$i] * $this->cardinal[$i]) % 10;
         }
 
-        $op = 10 - ($op % 10);
+        $remainder = $op % 10;
+
+        $op = ($remainder === 0) ? 0 : (10 - $remainder);
 
         return $no . $time_str . $op;
     }
