@@ -9,5 +9,11 @@ return [
 
     'password' => env('PAYNOW_PASSWORD', '1234'),
 
-    'ec_name' => env('PAYNOW_EC_NAME', 'ECName')
+    'ec_name' => env('PAYNOW_EC_NAME', 'ECName'),
+
+    'encrypt_key' => env('PAYNOW_ENCRYPT_KEY'),
+
+    'iv' => env('PAYNOW_IV'),
+
+    'cardinal' => env('PAYNOW_CARDINAL'),
 ];

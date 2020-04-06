@@ -32,11 +32,11 @@ class PayNowEncrypt extends PayNowSOAP
             $this->client = new SoapClient("https://www.paynow.com.tw/WS_PayNowEncrytp.asmx?wsdl", array('encoding' => ' UTF-8', 'soap_version' => SOAP_1_2, 'trace' => true));
         }
 
-        $this->encrypt_key = 'paynowencryptpaynowcomtw28229955';
+        $this->encrypt_key = config('paynow.encrypt_key');
 
-        $this->encrypt_iv = 'encrypt282299550';
+        $this->encrypt_iv = config('paynow.iv');
 
-        $this->cardinal = '93193193193193193193193';
+        $this->cardinal = config('paynow.cardinal');
 
         $this->hash = config('paynow.web_no');
 
@@ -169,7 +169,9 @@ class PayNowEncrypt extends PayNowSOAP
             $op += ($key[$i] * $this->cardinal[$i]) % 10;
         }
 
-        $op = 10 - ($op % 10);
+        $remainder = $op % 10;
+
+        $op = ($remainder === 0) ? 0 : (10 - $remainder);
 
         return $no . $time_str . $op;
     }
