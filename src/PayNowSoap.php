@@ -36,6 +36,10 @@ abstract class PayNowSOAP
      */
     public function generateTimeStr(Carbon $time)
     {
-        return substr($time->format('y'), -1) . $time->diffInDays($time->copy()->startOfYear()->subDay()) . $time->format('His');
+        $startOfYear = $time->diffInDays($time->copy()->startOfYear()->subDay());
+
+        $startOfYear = str_pad($startOfYear, 3, '0', STR_PAD_LEFT);
+
+        return substr($time->format('y'), -1) . $startOfYear . $time->format('His');
     }
 }
