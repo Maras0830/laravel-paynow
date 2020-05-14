@@ -204,11 +204,11 @@ class CreditCardTransaction extends PayNowSOAP
         $pass_code = strtoupper(sha1(config('paynow.web_no') . config('paynow.password') . $decode['BuySafeNo'] . $decode['TotalPrice'] . $decode['RespCode'] ));
 
         if ($decode['PassCode'] !== $pass_code) {
-            throw new ValidateException('PassCode check fail.');
+            throw new ValidateException($decode['ErrorMessage'] ?? 'PassCode check fail.');
         }
 
         if ($decode['RespCode'] !== '00') {
-            throw (new TransactionException('Transaction fail'))->setResponse($decode);
+            throw (new TransactionException($decode['ErrorMessage'] ?? 'Transaction fail'))->setResponse($decode);
         }
 
         return $decode;
