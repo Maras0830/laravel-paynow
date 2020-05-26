@@ -1,6 +1,11 @@
 # Paynow SDK
 https://github.com/Maras0830/laravel-paynow
 
+## ToDo
+
+- [x] CreditCard Backend Single Transaction
+- [x] Transaction Check
+
 ## Installation
 
 Enable php extension soap
@@ -60,4 +65,28 @@ $res = $transaction
     ->setCustomer(1, 'Eric', '09121212121212', 'test@test.com', '127.0.0.1')
     ->checkout()
     ->decodeAndValidate();
+```
+
+2. Transaction Check
+
+```php
+$my_order_number = 'TEST10001';
+
+$sdk = new Maras0830\PayNowSDK\PayNowAPI();
+
+/**
+ * @throws Maras0830\PayNowSDK\Exceptions\OrderNotFoundException
+ * @throws Maras0830\PayNowSDK\Exceptions\TransactionException
+ * @throws Maras0830\PayNowSDK\Exceptions\OrderIsCancelException
+ * @throws Maras0830\PayNowSDK\Exceptions\UnKnownException
+ */
+$res = $sdk->transactionCheck($my_order_number);
+
+/**
+$res => [
+    'order_number' => 'xxxxx' // Paynow Order number
+    'last4' => 'xxxx'         // CreditCard last4 code
+];
+**/
+
 ```
