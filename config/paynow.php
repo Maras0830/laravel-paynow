@@ -16,4 +16,8 @@ return [
     'iv' => env('PAYNOW_IV'),
 
     'cardinal' => env('PAYNOW_CARDINAL'),
+
+    'timeout' => env('PAYNOW_TIMEOUT', 180),
+
+    'connection_timeout' => env('PAYNOW_CONNECTION_TIMEOUT', 300),
 ];
