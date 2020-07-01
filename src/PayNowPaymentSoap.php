@@ -12,10 +12,12 @@ class PayNowPaymentSoap
      */
     public function __construct()
     {
+        ini_set('default_socket_timeout', config('paynow.timeout', 180));
+
         if (config('paynow.debug_mode') === true)
-            $this->client = new SoapClient("http://test.paynow.com.tw/PaymentCheck.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
+            $this->client = new SoapClient("http://test.paynow.com.tw/PaymentCheck.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true, "connection_timeout" => config('paynow.connection_timeout', 300)));
         else
-            $this->client = new SoapClient("http://www.paynow.com.tw/PaymentCheck.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true));
+            $this->client = new SoapClient("http://www.paynow.com.tw/PaymentCheck.asmx?wsdl", array('soap_version' => SOAP_1_2, 'trace' => true, "connection_timeout" => config('paynow.connection_timeout', 300)));
     }
 
     /**
