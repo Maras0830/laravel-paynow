@@ -165,6 +165,30 @@ $res = $transaction
     ->checkoutBySN($card_sn) // safe_code can use 'XXX'
     ->decodeAndValidate();
 
+/**
+$res = [
+    "WebNo" => "70828783"
+    "TotalPrice" => 100
+    "OrderNo" => "TEST1231593574222"
+    "ECPlatform" => null
+    "BuySafeNo" => "8000002007014585819"
+    "TranStatus" => "S"
+    "PassCode" => "FDEA87E80373A00FAD48C89AD5BA32A954675678"
+    "RespCode" => "00"
+    "ResponseMSG" => ""
+    "ApproveCode" => "A00001"
+    "last4CardNo" => "2803"
+    "CheckNo" => null
+    "InvoiceNo" => null
+    "batchNo" => null
+    "InvoiceStatus" => null
+    "Result3D" => ""
+    "CIFID_SN" => "1"  // 該卡 token, 請保存
+    "ReturnURL" => null
+    "ErrorMessage" => ""
+]
+*/
+
 ```
 
 ## 交易錯誤碼
