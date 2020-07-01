@@ -79,11 +79,15 @@ class CreditCardTransaction extends PayNowSOAP
      * @param $tel
      * @param $email
      * @param $ip
+     * @param null $account
+     * @param null $password
      * @return $this
      */
-    public function setCustomer($id, $name, $tel, $email, $ip)
+    public function setCustomer($id, $name, $tel, $email, $ip, $account = null, $password = null)
     {
         $this->customer = new Customer($id, $name, $tel, $email, $ip);
+        $this->customer->setCIFID($account);
+        $this->customer->setCIFPW($password);
 
         return $this;
     }
@@ -179,19 +183,154 @@ class CreditCardTransaction extends PayNowSOAP
             throw new CheckoutException($e->getMessage());
         }
 
+        return $this;
+    }
+
+    /**
+     * 訂閱付款第一筆交易
+     * @return CreditCardTransaction
+     * @throws CheckoutException
+     * @throws Exceptions\EncryptException
+     * @throws PayNowException
+     */
+    public function checkoutAndSaveCard()
+    {
+        if ($this->encrypt === null) {
+            throw new PayNowException('You need to setEncrypt');
+        }
+
+        if ($this->order === null) {
+            throw new PayNowException('You need to setOrder');
+        }
+
+        if ($this->customer === null) {
+            throw new PayNowException('You need to setCustomer');
+        }
+
+        if ($this->customer->getCIFID() === null || $this->customer->getCIFPW() === null) {
+            throw new PayNowException("Customer account and password can't null");
+        }
+
+        if ($this->creditCard === null) {
+            throw new PayNowException('You need to setCreditCard');
+        }
+
+        $data = [
+            'mem_cid' => config('paynow.web_no'),
+            'mem_checkpw' => config('paynow.password'),
+            'OrderNo' => $this->order->number,
+            'OrderInfo' => $this->order->info,
+            'ECPlatform' => config('paynow.ec_name', 'Eric'),
+            'ReceiverID' => $this->customer->id,
+            'ReceiverEmail' => $this->customer->email,
+            'ReceiverName' => $this->customer->name,
+            'ReceiverTel' => $this->customer->tel,
+            'TotalPrice' => $this->order->total,
+            'CIFID' => $this->customer->getCIFID(),
+            'CIFPW' => $this->customer->getCIFPW(),
+            'CardNo' => $this->creditCard->secret_card_number,
+            'PassCode' => strtoupper(sha1(config('paynow.web_no') . $this->order->number . $this->order->total . config('paynow.password'))),
+            'UserIp' => $this->customer->ip,
+        ];
+
+
+        $json_str = $this->encrypt(json_encode($data));
+
+        $content = [
+            'JStr' => urlencode(substr($json_str, 0, strlen($json_str) / 2)),
+            'JStr2' => urlencode(substr($json_str, -1 * strlen($json_str) / 2)),
+            'mem_cid' => config('paynow.web_no'),
+            'TimeStr' => $this->generateTimeStr($this->time),
+            'CheckNum' => $this->encrypt->getCheckNum(),
+        ];
+
+        try {
+            $this->response = $this->getSoapClient()->__soapCall('CardAuthorise_ULoadCIFID_P', [
+                $content
+            ]);
+        } catch (\SoapFault $e) {
+            throw new CheckoutException($e->getMessage());
+        }
 
         return $this;
     }
 
     /**
+     * 訂閱付款授權交易
+     * @param $sn
+     * @param string $safe_code
+     * @return $this
+     * @throws CheckoutException
+     * @throws Exceptions\EncryptException
+     * @throws PayNowException
+     */
+    public function checkoutBySN($sn, $safe_code = 'XXX')
+    {
+        if ($this->encrypt === null) {
+            throw new PayNowException('You need to setEncrypt');
+        }
+
+        if ($this->order === null) {
+            throw new PayNowException('You need to setOrder');
+        }
+
+        if ($this->customer === null) {
+            throw new PayNowException('You need to setCustomer');
+        }
+
+        if ($this->customer->getCIFID() === null || $this->customer->getCIFPW() === null) {
+            throw new PayNowException("Customer account and password can't null");
+        }
+
+        $data = [
+            'mem_cid' => config('paynow.web_no'),
+            'mem_checkpw' => config('paynow.password'),
+            'OrderNo' => $this->order->number,
+            'OrderInfo' => $this->order->info,
+            'ECPlatform' => config('paynow.ec_name', 'Eric'),
+            'TotalPrice' => $this->order->total,
+            'CIFID' => $this->customer->getCIFID(),
+            'CIFPW' => $this->customer->getCIFPW(),
+            'CIFID_SN' => $sn,
+            'CardlastNo' => $safe_code,
+            'PassCode' => strtoupper(sha1(config('paynow.web_no') . $this->order->number . $this->order->total . config('paynow.password'))),
+            'UserIp' => $this->customer->ip,
+        ];
+
+        $json_str = $this->encrypt(json_encode($data));
+
+        $content = [
+            'JStr' => urlencode(substr($json_str, 0, strlen($json_str) / 2)),
+            'JStr2' => urlencode(substr($json_str, -1 * strlen($json_str) / 2)),
+            'mem_cid' => config('paynow.web_no'),
+            'TimeStr' => $this->generateTimeStr($this->time),
+            'CheckNum' => $this->encrypt->getCheckNum(),
+        ];
+
+        try {
+            $this->response = $this->getSoapClient()->__soapCall('CardAuthorise_DLoadCIFID_P', [
+                $content
+            ]);
+        } catch (\SoapFault $e) {
+            throw new CheckoutException($e->getMessage());
+        }
+
+        return $this;
+    }
+
+    /**
+     * 驗證交易
      * @return mixed
      * @throws DecryptException
      * @throws PayNowException
+     * @throws TransactionException
      * @throws ValidateException
      */
     public function decodeAndValidate()
     {
-        $response = $this->getLastResponse()->CardAuthorise_PResult;
+        $response_name = key($this->getLastResponse());
+
+        $response = $this->getLastResponse()->$response_name;
 
         if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
             throw new PayNowException('paynow service fail.');

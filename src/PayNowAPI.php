@@ -63,14 +63,17 @@ class PayNowAPI extends PayNowSOAP
                 $detail = explode('_', $response_arr[1]);
                 return [
                     'order_number' => $detail[0] ?? '',
-                    'last4' => $detail[1] ?? ''
+                    'BuySafeNo' => $detail[0] ?? '',
+
+                    'last4' => $detail[1] ?? '',
+                    'last4CardNo' => $detail[1] ?? '',
                 ];
                 break;
             case self::ERROR:
                 $detail = explode('_', $response_arr[1]);
                 $code = $detail[2] ?? '0';
                 $msg = self::translateErrorMessage($code);
-                throw new TransactionException($msg, $code);
+                throw new TransactionException($msg, self::translateCode($code));
                 break;
             case self::CANCEL:
                 $msg = self::translateCancelMessage($response_arr[1] ?? '');
@@ -85,6 +88,47 @@ class PayNowAPI extends PayNowSOAP
         }
     }
 
+
+    public static function translateCode($code)
+    {
+        $list = [
+            '0' => '0',
+            '01' => '01',
+            '02' => '02',
+            '04' => '04',
+            '05' => '05',
+            '06' => '06',
+            '07' => '07',
+            '12' => '12',
+            '14' => '14',
+            '15' => '15',
+            '33' => '33',
+            '41' => '41',
+            '43' => '43',
+            '51' => '51',
+            '54' => '54',
+            '55' => '55',
+            '56' => '56',
+            '57' => '57',
+            '58' => '58',
+            '62' => '62',
+            '87' => '87',
+            '90' => '90',
+            '96' => '96',
+            '916' => '916',
+            '920' => '920',
+            '922' => '922',
+            '933' => '933',
+            '934' => '934',
+            '935' => '935',
+            '939' => '939',
+            'N7' => '1007',
+            'P1' => '1011',
+            'Q1' => '1021',
+        ];
+
+        return $list[$code] ?? 0;
+    }
 
     /**
      * @param $code
