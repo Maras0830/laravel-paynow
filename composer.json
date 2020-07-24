@@ -16,7 +16,6 @@
     },
     "require": {
         "guzzlehttp/guzzle": "^6.2",
-        "nesbot/carbon": "^1.26.3",
         "ext-soap": "*",
         "ext-openssl": "*",
         "ext-soap": "*",
