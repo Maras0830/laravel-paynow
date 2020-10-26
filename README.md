@@ -13,15 +13,15 @@ http://php.net/manual/en/book.soap.php
 
 composer require
 ```bash
-composer require "Maras0830/laravel-paynow=^v0.1"
+$ composer require maras0830/laravel-paynow"
 ```
 
-add to ```config/app.php```
-```
+add to `config/app.php`
+```php
 'providers' => [
-   ...,
+   // ....
    Maras0830\PayNowSDK\Providers\PayNowServiceProvider::class
- ],
+],
 ```
 
 publish config file to *config/paynow.php*
@@ -29,8 +29,8 @@ publish config file to *config/paynow.php*
 $ php artisan vendor:publish --provider=Maras0830\PayNowSDK\Providers\PayNowServiceProvider
 ```
 
-in .env
-```
+in `.env`
+```dotenv
 PAYNOW_DEBUG_MODE=true
 PAYNOW_WEB_NO=
 PAYNOW_PASSWORD=
@@ -40,7 +40,7 @@ PAYNOW_IV=
 PAYNOW_CARDINAL=
 ```
 
-### Example
+### Usage
 
 測試卡號： 4025950011112222
 有效年月： 12/12
@@ -49,7 +49,7 @@ PAYNOW_CARDINAL=
 1. CreditCard backend transaction
 
 ```php
-$now = Carbon\Carbon::now('Asia/Taipei');
+$now = \Carbon\Carbon::now('Asia/Taipei');
 $transaction = new Maras0830\PayNowSDK\CreditCardTransaction($now);
 
 $card_number = '4023730207292803';
@@ -88,5 +88,4 @@ $res => [
     'last4' => 'xxxx'         // CreditCard last4 code
 ];
 **/
-
 ```
