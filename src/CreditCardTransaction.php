@@ -330,17 +330,7 @@ class CreditCardTransaction extends PayNowSOAP
      */
     public function decodeAndValidate()
     {
-        $response_name = key($this->getLastResponse());
-
-        $response = $this->getLastResponse()->$response_name;
-
-        if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
-            throw new PayNowException('paynow service fail.');
-        }
-
-        $decrypted = $this->decrypt($response);
-
-        $decode = json_decode($decrypted, true);
+        $decode = $this->decode();
 
         $pass_code = strtoupper(sha1(config('paynow.web_no') . config('paynow.password') . $decode['BuySafeNo'] . $decode['TotalPrice'] . $decode['RespCode']));
 
@@ -357,5 +347,20 @@ class CreditCardTransaction extends PayNowSOAP
         }
 
         return $decode;
+    }
+
+    public function decode()
+    {
+        $response_name = key($this->getLastResponse());
+
+        $response = $this->getLastResponse()->$response_name;
+
+        if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
+            throw new PayNowException('paynow service fail.');
+        }
+
+        $decrypted = $this->decrypt($response);
+
+        return json_decode($decrypted, true);
     }
 }
