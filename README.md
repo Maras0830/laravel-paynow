@@ -7,7 +7,8 @@ https://github.com/Maras0830/laravel-paynow
 - [x] Transaction Check
 - [x] Subscription
 - [ ] Installment
-- [ ] 3-Domain Secure
+- [X] 3-Domain Secure
+- [X] Callback Check
 
 ## Installation
 
