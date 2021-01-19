@@ -348,6 +348,10 @@ class CreditCardTransaction extends PayNowSOAP
             throw new ValidateException($decode['ErrorMessage'] ?? 'PassCode check fail.');
         }
 
+        if (!empty($decode['Result3D'])) {
+            return $decode;
+        }
+
         if ($decode['RespCode'] !== '00') {
             throw (new TransactionException($decode['ErrorMessage'] ?? 'Transaction fail'))->setResponse($decode);
         }

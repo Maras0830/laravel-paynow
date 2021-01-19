@@ -29,8 +29,19 @@ class CreditCardInfo
         $this->encrypt_key = $key;
         $this->encrypt_iv = $iv;
 
-        $card_info = $card_number . $safe_code . $valid_month . '/' . $valid_year;
+        $card_info = $card_number . $safe_code . $valid_month . '/' . $this->convertYearFormat($valid_year);
 
         $this->secret_card_number = $this->encrypt($card_info);
+    }
+
+    private function convertYearFormat($valid_year)
+    {
+        $year = filter_var($valid_year, FILTER_VALIDATE_INT);
+
+        if ($year >= 2000) {
+            return str_pad($year - 2000, 2, '0', STR_PAD_LEFT);
+        } else {
+            return str_pad($year, 2, '0', STR_PAD_LEFT);
+        }
     }
 }

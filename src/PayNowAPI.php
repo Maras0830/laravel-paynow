@@ -4,6 +4,7 @@
 namespace Maras0830\PayNowSDK;
 
 
+use Maras0830\PayNowSDK\Exceptions\CallbackCheckException;
 use Maras0830\PayNowSDK\Exceptions\OrderIsCancelException;
 use Maras0830\PayNowSDK\Exceptions\OrderNotFoundException;
 use Maras0830\PayNowSDK\Exceptions\TransactionException;
@@ -191,5 +192,30 @@ class PayNowAPI extends PayNowSOAP
         ];
 
         return $list[$code] ?? 'unknown msg';
+    }
+
+
+    /**
+     * @param $input
+     * @return mixed
+     * @throws CallbackCheckException
+     */
+    public function callbackCheck($input)
+    {
+        if (empty($input['OrderNo'])) {
+            throw new CallbackCheckException('Miss OrderNo.');
+        }
+
+        if (empty($input['TotalPrice'])) {
+            throw new CallbackCheckException('Miss TotalPrice.');
+        }
+
+        $my_passcode = strtoupper(sha1(config('paynow.web_no') .  $input['OrderNo'] . $input['TotalPrice'] . config('paynow.password')));
+
+        if ($my_passcode !== $input['Passcode']) {
+            throw new CallbackCheckException('Passcode check fail.');
+        }
+
+        return $input;
     }
 }
