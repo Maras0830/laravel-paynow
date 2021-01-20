@@ -322,13 +322,13 @@ class CreditCardTransaction extends PayNowSOAP
 
     /**
      * 驗證交易
+     * @param bool $is_3d
      * @return mixed
-     * @throws DecryptException
      * @throws PayNowException
      * @throws TransactionException
      * @throws ValidateException
      */
-    public function decodeAndValidate()
+    public function decodeAndValidate($is_3d = false)
     {
         $decode = $this->decode();
 
@@ -338,7 +338,11 @@ class CreditCardTransaction extends PayNowSOAP
             throw new ValidateException($decode['ErrorMessage'] ?? 'PassCode check fail.');
         }
 
-        if (!empty($decode['Result3D'])) {
+        if (!empty($decode['ErrorMessage'])) {
+            throw (new TransactionException($decode['ErrorMessage'] ?? 'Transaction fail'))->setResponse($decode);
+        }
+
+        if ($is_3d) {
             return $decode;
         }
 
