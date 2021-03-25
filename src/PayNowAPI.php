@@ -210,10 +210,14 @@ class PayNowAPI extends PayNowSOAP
             throw new CallbackCheckException('Miss TotalPrice.');
         }
 
+        if (empty($input['PassCode'])) {
+            throw new CallbackCheckException('Miss PassCode.');
+        }
+
         $my_passcode = strtoupper(sha1(config('paynow.web_no') .  $input['OrderNo'] . $input['TotalPrice'] . config('paynow.password')));
 
-        if ($my_passcode !== $input['Passcode']) {
-            throw new CallbackCheckException('Passcode check fail.');
+        if ($my_passcode !== $input['PassCode']) {
+            throw new CallbackCheckException('PassCode check fail.');
         }
 
         return $input;
