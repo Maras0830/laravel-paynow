@@ -212,7 +212,7 @@ class PayNowAPI extends PayNowSOAP
 
         $my_passcode = strtoupper(sha1(config('paynow.web_no') .  $input['OrderNo'] . $input['TotalPrice'] . config('paynow.password')));
 
-        if ($my_passcode !== $input['Passcode']) {
+        if ($my_passcode !== $input['PassCode']) {
             throw new CallbackCheckException('Passcode check fail.');
         }
 
