@@ -14,12 +14,20 @@
             "Maras0830\\PayNowSDK\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require": {
         "guzzlehttp/guzzle": "^6.2",
         "ext-soap": "*",
         "ext-openssl": "*",
-        "ext-soap": "*",
         "ext-json": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-mcrypt": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "*"
     }
 }

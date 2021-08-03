@@ -20,4 +20,6 @@ return [
     'timeout' => env('PAYNOW_TIMEOUT', 180),
 
     'connection_timeout' => env('PAYNOW_CONNECTION_TIMEOUT', 300),
+
+    'refund_encrypt_key' => env('PAYNOW_REFUND_ENCRYPT_KEY'),
 ];
