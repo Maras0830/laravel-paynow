@@ -191,6 +191,27 @@ $res = [
 
 ```
 
+> Refund Order
+
+```php
+
+$payment_refund = new Maras0830\PayNowSDK\PaymentRefund();
+
+$res = $payment_refund->refund(
+    '8000001910145799460',
+    '860.0000',
+    '退款測試',
+    1,
+    '',
+    '',
+    '',
+    'harley@gs8899.com.tw',
+    'Harley',
+    'harley@gs8899.com.tw'
+);
+
+```
+
 ## 交易錯誤碼
 
 | PayNow Code | Exception Code | Error Msg |
