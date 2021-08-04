@@ -21,9 +21,6 @@ trait TripleDESEncrypt
      */
     protected function encrypt($data)
     {
-        $this->encrypt_key = '123456789028229955123456';
-        $this->encrypt_iv = null;
-
         $value = self::pad($data);
 
         $result = openssl_encrypt(
