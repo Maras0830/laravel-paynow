@@ -21,9 +21,6 @@ trait TripleDESEncrypt
      */
     protected function encrypt($data)
     {
-        $this->encrypt_key = '123456789028229955123456';
-        $this->encrypt_iv = null;
-
         $value = self::pad($data);
 
         $result = openssl_encrypt(
@@ -47,12 +44,7 @@ trait TripleDESEncrypt
      */
     protected function decrypt($hash)
     {
-        $this->encrypt_key = '123456789028229955123456';
-        $this->encrypt_iv = null;
-        $hash = '7zd+oMo5OU+q463pQv4CfuCBf642FxxxlvyfflJwb9PI3pdVzV3nm6zdzrI+FigbhxKNDh0fAWrsVXrfK0+VYrD1yOjDwgn5r+gp4nezlI/dwHBH4BbRj5yZU3GhMnnWyRv6WOWwzlEAO916A/t1ucLuSsLQeGrr0R+o0HNfFQucTP1Reuy5M+rTTd6pMVRgJ2XK/8sLR4BS+YkgQLb7egy5TrwjJSR9Iv31zvPz81YBOSwc28n7k+C661COZzGKULdnugZwVgNZx0rQv+6RRKAcrT0isspnFBHlT0IJccH+XnaqkdE93JTYT4t2XKvYL1fjM5xffXsgXuumu31ytq9SQuMeGIHVMwMFukI3bjwGE7GX0+EAXe0HEl4QF/mjrpQDgl7n41ElUEznbQmi47AbL5jfqe0H/rXmfE0sek3erUtgruwdW2HLfQB5/3RvBPmVbWK1l3Y=';
         $hash = base64_decode($hash);
-
-
         $decrypted = openssl_decrypt(
             $hash,
             'DES-EDE3',
@@ -60,7 +52,11 @@ trait TripleDESEncrypt
             OPENSSL_RAW_DATA | OPENSSL_ZERO_PADDING
         );
 
-        dd($decrypted);
+        if ($decrypted === false) {
+            throw new DecryptException();
+        }
+
+        return $decrypted;
     }
 
     /**

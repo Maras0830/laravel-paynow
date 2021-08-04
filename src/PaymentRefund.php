@@ -2,7 +2,6 @@
 namespace Maras0830\PayNowSDK;
 
 use GuzzleHttp\Client;
-use Maras0830\PayNowSDK\Exceptions\PayNowException;
 use Maras0830\PayNowSDK\Traits\TripleDESEncrypt;
 
 class PaymentRefund
@@ -29,7 +28,7 @@ class PaymentRefund
 
         $this->client = app(Client::class);
 
-        if (config('paynow.debug_mode') === true) {
+        if (config('paynow.debug_mode') == true) {
             $this->url = 'https://test.paynow.com.tw/service/PayNowAPI_JS.aspx';
         }
         else {
@@ -40,28 +39,29 @@ class PaymentRefund
     }
 
     public function refund(
-        $order_number,
+        $order_no,
+        $buy_safe_no,
         $refund_price,
         $refundvalue,
         $refundmode = 1,
-        $mem_bankaccno = null,
-        $accountbankno = null,
-        $mem_bankaccount = null,
-        $buyerid = null,
-        $buyername = null,
-        $buyeremail = null
+        $mem_bankaccno = '',
+        $accountbankno = '',
+        $mem_bankaccount = '',
+        $buyerid = '',
+        $buyername = '',
+        $buyeremail = ''
     )
     {
         $passcode = $this->generatePassCode(
             config('paynow.web_no'),
-            $order_number,
+            $order_no,
             $refund_price,
             config('paynow.password')
         );
 
         $data = [
             "mem_type" => 2,
-            "buysafeno" => $order_number,
+            "buysafeno" => $buy_safe_no,
             "mem_cid" => config('paynow.web_no'),
             "passcode" => $passcode,
             "mem_bankaccno" => $mem_bankaccno,
@@ -79,22 +79,28 @@ class PaymentRefund
 
         try {
             $result = $this->client->post($this->url, [
-                'OP' => 'R',
-                'JStr' => $encrypt
+                'form_params' => [
+                    'OP' => 'R',
+                    'JStr' => $encrypt
+                ]
             ]);
 
             $this->response = $this->responseDecode($result->getBody()->getContents());
         } catch (\Exception $e) {
-            throw new PayNowException($e->getMessage());
+            $this->response = [
+                'status' => 'F',
+                'message' => $e->getMessage(),
+                'passcode' => ''
+            ];
         }
 
         return $this;
     }
 
 
-    private function generatePassCode($mem_cid, $buy_safe_no, $refund_price, $password)
+    private function generatePassCode($mem_cid, $order_no, $refund_price, $password)
     {
-        $hash = hash('sha1', $mem_cid . $buy_safe_no . $refund_price . $password);
+        $hash = hash('sha1', $mem_cid . $order_no . $refund_price . $password);
 
         return strtoupper($hash);
     }
