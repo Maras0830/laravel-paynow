@@ -24,8 +24,7 @@
         "ext-soap": "*",
         "ext-openssl": "*",
         "ext-json": "*",
-        "ext-mbstring": "*",
-        "ext-mcrypt": "*"
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "orchestra/testbench": "*"

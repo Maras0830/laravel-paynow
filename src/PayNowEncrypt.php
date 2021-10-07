@@ -91,26 +91,30 @@ class PayNowEncrypt extends PayNowSOAP
     {
         $response = $this->getLastResponse()->GetEncryptionStrResult;
 
-        if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
-            throw new PayNowException('paynow service fail.');
-        }
+        try {
+            if ($response === '基礎連接已關閉: 接收時發生未預期的錯誤。') {
+                throw new PayNowException('paynow service fail.');
+            }
 
-        $time_str = $this->generateTimeStr($this->time);
+            $time_str = $this->generateTimeStr($this->time);
 
-        $decrypted = $this->decrypt($response);
+            $decrypted = $this->decrypt($response);
 
-        $decode = json_decode($decrypted, true);
+            $decode = json_decode($decrypted, true);
 
-        $check_code = $this->generateCheckCode($time_str, $is_get_key ? 'GP' : 'GK');
+            $check_code = $this->generateCheckCode($time_str, $is_get_key ? 'GP' : 'GK');
 
-        $pass_code = $this->generatePassCode($this->hash, $check_code, $decode['CheckNum'] ?? null);
+            $pass_code = $this->generatePassCode($this->hash, $check_code, $decode['CheckNum'] ?? null);
 
-        if ($decode['PassCode'] !== $pass_code) {
-            throw new ValidateException();
-        }
+            if ($decode['PassCode'] !== $pass_code) {
+                throw new ValidateException("PayNowEncrypt fail");
+            }
 
-        if (!empty($decode['CheckNum'])) {
-            $this->check_num = $decode['CheckNum'];
+            if (!empty($decode['CheckNum'])) {
+                $this->check_num = $decode['CheckNum'];
+            }
+        } catch (PayNowException $exception) {
+            throw $exception->setResponse($response);
         }
 
         return $decode;
