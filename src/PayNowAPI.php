@@ -7,6 +7,7 @@ namespace Maras0830\PayNowSDK;
 use Maras0830\PayNowSDK\Exceptions\CallbackCheckException;
 use Maras0830\PayNowSDK\Exceptions\OrderIsCancelException;
 use Maras0830\PayNowSDK\Exceptions\OrderNotFoundException;
+use Maras0830\PayNowSDK\Exceptions\PayNowException;
 use Maras0830\PayNowSDK\Exceptions\TransactionException;
 use Maras0830\PayNowSDK\Exceptions\UnKnownException;
 use SoapClient;
@@ -43,6 +44,7 @@ class PayNowAPI extends PayNowSOAP
      * @throws TransactionException
      * @throws OrderIsCancelException
      * @throws UnKnownException
+     * @throws PayNowException
      */
     public function transactionCheck($order_number)
     {
@@ -55,39 +57,44 @@ class PayNowAPI extends PayNowSOAP
 
         $response = $this->getLastResponse()->Sel_PaymentRespCodeResult;
 
-        if ($response === self::NOTFOUND) {
-            throw new OrderNotFoundException("order not found");
-        }
-
-        $response_arr = explode(',', $response);
-
-        switch ($response_arr[0]) {
-            case self::SUCCESS:
-                $detail = explode('_', $response_arr[1]);
-                return [
-                    'order_number' => $detail[0] ?? '',
-                    'BuySafeNo' => $detail[0] ?? '',
-
-                    'last4' => $detail[1] ?? '',
-                    'last4CardNo' => $detail[1] ?? '',
-                ];
-                break;
-            case self::ERROR:
-                $detail = explode('_', $response_arr[1]);
-                $code = $detail[2] ?? '0';
-                $msg = self::translateErrorMessage($code);
-                throw new TransactionException($msg, self::translateCode($code));
-                break;
-            case self::CANCEL:
-                $msg = self::translateCancelMessage($response_arr[1] ?? '');
-                throw new OrderIsCancelException($msg);
-                break;
-            case self::NOTFOUND:
+        try {
+            if ($response === self::NOTFOUND) {
                 throw new OrderNotFoundException("order not found");
-                break;
-            default:
-                throw new UnKnownException("unknown exception");
-                break;
+            }
+
+            $response_arr = explode(',', $response);
+
+            switch ($response_arr[0]) {
+                case self::SUCCESS:
+                    $detail = explode('_', $response_arr[1]);
+                    return [
+                        'order_number' => $detail[0] ?? '',
+                        'BuySafeNo' => $detail[0] ?? '',
+
+                        'last4' => $detail[1] ?? '',
+                        'last4CardNo' => $detail[1] ?? '',
+                    ];
+                    break;
+                case self::ERROR:
+                    $detail = explode('_', $response_arr[1]);
+                    $code = $detail[2] ?? '0';
+                    $msg = self::translateErrorMessage($code);
+                    throw new TransactionException($msg, self::translateCode($code));
+                    break;
+                case self::CANCEL:
+                    $msg = self::translateCancelMessage($response_arr[1] ?? '');
+                    throw new OrderIsCancelException($msg);
+                    break;
+                case self::NOTFOUND:
+                    throw new OrderNotFoundException("order not found");
+                    break;
+                default:
+                    throw new UnKnownException("unknown exception");
+                    break;
+            }
+
+        } catch (PayNowException $exception) {
+            throw $exception->setResponse($response);
         }
     }
 

@@ -2,7 +2,6 @@
 
 namespace Tests\Unit;
 
-use Maras0830\PayNowSDK\PaymentRefund;
 use Maras0830\PayNowSDK\Traits\TripleDESEncrypt;
 use Orchestra\Testbench\TestCase;
 
@@ -53,6 +52,11 @@ class TripleDESEncryptTest extends TestCase
 class FakeClass
 {
     use TripleDESEncrypt;
+
+    public function __construct()
+    {
+        $this->encrypt_key = config('paynow.refund_encrypt_key');
+    }
 
     public function fakeEncrypt($data)
     {
