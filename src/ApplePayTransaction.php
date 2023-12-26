@@ -144,7 +144,7 @@ class ApplePayTransaction extends PayNowSOAP
             throw new PayNowException('You need to setCustomer');
         }
 
-        if ($this->paymentToken === null || $this->appleMerchantID ) {
+        if ($this->paymentToken === null || $this->appleMerchantID === null) {
             throw new PayNowException('You need to set paymentToken and appleMerchantID');
         }
 
