@@ -106,10 +106,15 @@ class AtmTransaction
         $client = new Client();
 
         try {
-            $this->response = $client->post($this->url, ['form_params' => $data]);
+            $this->response = $client->post($this->url, ['timeout' => 30, 'form_params' => $data]);
         } catch (\Exception $e) {
             throw new CheckoutException($e->getMessage());
         }
+
+        if(str_contains((string)$this->response->getBody(), '該商家交易訂單已存在，請與商家聯絡並重新產生交易')) {
+            throw new CheckoutException('該商家交易訂單已存在，請與商家聯絡並重新產生交易');
+        }
+
         return $this;
     }
 
