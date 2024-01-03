@@ -17,7 +17,7 @@ class AtmTransaction
     protected $url;
     protected $order;
     protected $customer;
-    protected int $deadLine;
+    protected $deadLine;
     protected $response;
 
 
